@@ -1,11 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { fetchNews } from "../services/newsApi";
+import { NewsSource } from "../types/news";
+import NewsGrid from "../components/NewsGrid";
+import SourceFilter from "../components/SourceFilter";
+import { useToast } from "../components/ui/use-toast";
 
 const Index = () => {
+  const [selectedSource, setSelectedSource] = useState<NewsSource | undefined>(undefined);
+  const { toast } = useToast();
+
+  const { data: news = [], isLoading, error } = useQuery({
+    queryKey: ["news", selectedSource],
+    queryFn: () => fetchNews(selectedSource),
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to fetch news. Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container py-8">
+        <h1 className="mb-8 text-4xl font-bold text-gray-900">Latest News</h1>
+        <SourceFilter
+          currentSource={selectedSource}
+          onSourceChange={setSelectedSource}
+        />
+        <NewsGrid news={news} isLoading={isLoading} />
       </div>
     </div>
   );
