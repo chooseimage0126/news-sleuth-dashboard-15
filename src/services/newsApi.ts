@@ -1,6 +1,6 @@
 import { NewsItem, NewsSource } from "../types/news";
 
-const API_KEY = "YOUR_NEWS_API_KEY"; // Note: In production, this should be in an env variable
+const API_KEY = "6fbcd204d1db4e59977cf9b9e6e4c651";
 
 const BASE_URL = "https://newsapi.org/v2";
 

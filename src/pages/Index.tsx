@@ -13,14 +13,16 @@ const Index = () => {
   const { data: news = [], isLoading, error } = useQuery({
     queryKey: ["news", selectedSource],
     queryFn: () => fetchNews(selectedSource),
-    onError: () => {
-      toast({
-        title: "Error",
-        description: "Failed to fetch news. Please try again later.",
-        variant: "destructive",
-      });
-    },
+    retry: 1,
   });
+
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Failed to fetch news. Please try again later.",
+      variant: "destructive",
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
