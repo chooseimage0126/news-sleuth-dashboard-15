@@ -8,10 +8,6 @@ interface SourceFilterProps {
 const sources = [
   { id: undefined, name: "All Sources", color: "bg-gray-500" },
   { id: "reuters" as NewsSource, name: "Reuters", color: "bg-reuters" },
-  { id: "bbc-news" as NewsSource, name: "BBC", color: "bg-bbc" },
-  { id: "the-new-york-times" as NewsSource, name: "New York Times", color: "bg-nyt" },
-  { id: "the-wall-street-journal" as NewsSource, name: "Wall Street Journal", color: "bg-wsj" },
-  { id: "cnn" as NewsSource, name: "CNN", color: "bg-cnn" },
 ];
 
 const SourceFilter = ({ currentSource, onSourceChange }: SourceFilterProps) => {
