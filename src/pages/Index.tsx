@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchNews } from "../services/newsApi";
 import { NewsSource } from "../types/news";
@@ -16,16 +16,13 @@ const Index = () => {
     retry: 1,
   });
 
-  useEffect(() => {
-    if (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to fetch news. Please try again later.";
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    }
-  }, [error, toast]);
+  if (error) {
+    toast({
+      title: "Error",
+      description: "Failed to fetch news. Please try again later.",
+      variant: "destructive",
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
