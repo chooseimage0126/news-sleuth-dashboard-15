@@ -29,10 +29,25 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
     "CNN": "#CC0000"
   };
 
+  const chartConfig = {
+    line: {
+      theme: {
+        light: "hsl(0 0% 0%)",
+        dark: "hsl(0 0% 100%)",
+      },
+    },
+    grid: {
+      theme: {
+        light: "hsl(0 0% 90%)",
+        dark: "hsl(0 0% 20%)",
+      },
+    },
+  };
+
   return (
     <div className="w-full h-96 mb-8 bg-white p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">News Sentiment Analysis</h2>
-      <ChartContainer className="h-80">
+      <ChartContainer className="h-80" config={chartConfig}>
         <LineChart data={sentimentData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis 
