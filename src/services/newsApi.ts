@@ -5,35 +5,67 @@ const BASE_URL = "https://newsapi.org/v2";
 
 const mockNewsData: NewsItem[] = [
   {
-    title: "Sample News Article 1",
-    description: "This is a sample news article for demonstration purposes.",
+    title: "Global Markets Rally on Strong Economic Data",
+    description: "Stock markets worldwide surge as economic indicators show robust growth and recovery across major economies.",
     url: "https://example.com/news/1",
     urlToImage: "https://images.unsplash.com/photo-1495020689067-958852a7765e",
     publishedAt: new Date().toISOString(),
     source: { id: "reuters", name: "Reuters" }
   },
   {
-    title: "Sample News Article 2",
-    description: "Another sample news article for testing.",
+    title: "Tech Giants Announce Breakthrough in AI Development",
+    description: "Leading technology companies reveal major advancements in artificial intelligence capabilities and applications.",
     url: "https://example.com/news/2",
     urlToImage: "https://images.unsplash.com/photo-1504711434969-e33886168f5c",
-    publishedAt: new Date().toISOString(),
+    publishedAt: new Date(Date.now() - 3600000).toISOString(),
     source: { id: "bbc-news", name: "BBC News" }
   },
   {
-    title: "Sample News Article 3",
-    description: "Third sample news article for testing purposes.",
+    title: "Climate Summit Yields Historic Agreement",
+    description: "World leaders reach unprecedented consensus on climate action at international conference.",
     url: "https://example.com/news/3",
     urlToImage: "https://images.unsplash.com/photo-1585829365295-ab7cd400c167",
-    publishedAt: new Date().toISOString(),
+    publishedAt: new Date(Date.now() - 7200000).toISOString(),
     source: { id: "the-wall-street-journal", name: "Wall Street Journal" }
   },
   {
-    title: "Sample News Article 4",
-    description: "Fourth sample news article for demonstration.",
+    title: "Healthcare Innovation: New Treatment Shows Promise",
+    description: "Revolutionary medical breakthrough offers hope for patients with previously untreatable conditions.",
     url: "https://example.com/news/4",
     urlToImage: "https://images.unsplash.com/photo-1586339949216-35c2747cc36d",
-    publishedAt: new Date().toISOString(),
+    publishedAt: new Date(Date.now() - 10800000).toISOString(),
+    source: { id: "cnn", name: "CNN" }
+  },
+  {
+    title: "Space Exploration: New Discoveries on Mars",
+    description: "NASA's latest Mars mission reveals groundbreaking findings about the red planet's potential for sustaining life.",
+    url: "https://example.com/news/5",
+    urlToImage: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9",
+    publishedAt: new Date(Date.now() - 14400000).toISOString(),
+    source: { id: "reuters", name: "Reuters" }
+  },
+  {
+    title: "Global Supply Chain Improvements Show Economic Recovery",
+    description: "Major improvements in global logistics and supply chain operations signal strong economic rebound.",
+    url: "https://example.com/news/6",
+    urlToImage: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088",
+    publishedAt: new Date(Date.now() - 18000000).toISOString(),
+    source: { id: "bbc-news", name: "BBC News" }
+  },
+  {
+    title: "Renewable Energy Sector Sets New Records",
+    description: "Solar and wind power generation reach unprecedented levels as countries accelerate green energy transition.",
+    url: "https://example.com/news/7",
+    urlToImage: "https://images.unsplash.com/photo-1509391366360-2e959784a276",
+    publishedAt: new Date(Date.now() - 21600000).toISOString(),
+    source: { id: "the-wall-street-journal", name: "Wall Street Journal" }
+  },
+  {
+    title: "Breakthrough in Quantum Computing Research",
+    description: "Scientists achieve major milestone in quantum computing, bringing practical applications closer to reality.",
+    url: "https://example.com/news/8",
+    urlToImage: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+    publishedAt: new Date(Date.now() - 25200000).toISOString(),
     source: { id: "cnn", name: "CNN" }
   }
 ];
