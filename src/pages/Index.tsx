@@ -15,6 +15,12 @@ const Index = () => {
   const [isColorBlindMode, setIsColorBlindMode] = useState(false);
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Wait until mounted to avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const { data: news = [], isLoading, error } = useQuery({
     queryKey: ["news", selectedSource],
@@ -31,6 +37,10 @@ const Index = () => {
       });
     }
   }, [error, toast]);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
