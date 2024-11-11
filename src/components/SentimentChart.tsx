@@ -60,10 +60,7 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
           <Tooltip />
           <Bar
             dataKey="sentiment"
-            fill="#22c55e"
-            style={(entry) => ({
-              fill: entry.sentiment >= 0 ? "#22c55e" : "#ef4444"
-            })}
+            fill={(entry) => (entry > 0 ? "#22c55e" : "#ef4444")}
           />
         </BarChart>
       </ChartContainer>
