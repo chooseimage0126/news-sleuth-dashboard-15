@@ -3,13 +3,13 @@ import { NewsItem, NewsSource } from "../types/news";
 const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
 
-const getRandomPastTime = (index: number) => {
-  // Spread articles over the last 7 days, with some random variation
-  const daysAgo = Math.floor(index / 3); // Spread every 3 articles across a day
-  const hoursVariation = Math.random() * 24; // Random hour within the day
+const getRandomPastTime = (index: number, totalStories: number) => {
+  // Spread stories evenly across 7 days
+  const daySpread = (index / totalStories) * 7; // Convert index to a position in the 7-day range
+  const hoursVariation = Math.random() * 8; // Add some random hours variation within the day
   const date = new Date();
-  date.setDate(date.getDate() - daysAgo);
-  date.setHours(Math.floor(hoursVariation));
+  date.setDate(date.getDate() - daySpread);
+  date.setHours(12 + Math.floor(hoursVariation) - 4); // Center around noon ±4 hours
   date.setMinutes(Math.floor(Math.random() * 60));
   return date.toISOString();
 };
@@ -31,7 +31,7 @@ const generateStoriesForSource = (sourceId: string, sourceName: string): NewsIte
     { mood: "very negative", words: ["Crisis", "Critical Problems", "Severe Issues", "Major Setback"] }
   ];
 
-  return Array.from({ length: 20 }, (_, i) => {
+  const stories = Array.from({ length: 20 }, (_, i) => {
     const topicGroup = topics[Math.floor(Math.random() * topics.length)];
     const topic = topicGroup[Math.floor(Math.random() * topicGroup.length)];
     const sentimentPattern = sentimentPatterns[Math.floor(Math.random() * sentimentPatterns.length)];
@@ -42,10 +42,12 @@ const generateStoriesForSource = (sourceId: string, sourceName: string): NewsIte
       description: `${sourceName} reports on ${topic.toLowerCase()} sector, highlighting ${sentimentPattern.mood} developments and their implications for global markets and society.`,
       url: `https://example.com/news/${sourceId}/${i + 1}`,
       urlToImage: `https://images.unsplash.com/photo-${1500000000000 + i}`,
-      publishedAt: getRandomPastTime(i),
+      publishedAt: getRandomPastTime(i, 20),
       source: { id: sourceId, name: sourceName }
     };
   });
+
+  return stories;
 };
 
 const mockNewsData: NewsItem[] = [

@@ -52,12 +52,10 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
       sentimentPattern: sentimentInfo.pattern,
       publishedAt: date.toLocaleDateString('en-US', { 
         month: 'short', 
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+        day: 'numeric'
       })
     };
-  });
+  }).sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
 
   const chartConfig = {
     line: {
@@ -83,7 +81,7 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
       <ChartContainer className="h-[450px]" config={chartConfig}>
         <LineChart 
           data={sentimentData}
-          margin={{ top: 20, right: 120, bottom: 80, left: 40 }}
+          margin={{ top: 20, right: 120, bottom: 60, left: 40 }}
         >
           <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
           {sentimentRanges.map((range) => (
@@ -110,9 +108,9 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
             dataKey="publishedAt" 
             angle={-45}
             textAnchor="end"
-            height={80}
+            height={60}
             tick={{ fill: theme === 'dark' ? '#fff' : '#000' }}
-            interval={0}
+            interval={Math.ceil(sentimentData.length / 7)} // Show roughly 7 ticks
           />
           <YAxis 
             domain={[-10, 10]}
