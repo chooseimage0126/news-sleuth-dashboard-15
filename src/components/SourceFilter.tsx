@@ -11,7 +11,6 @@ const sources = [
   { id: "bbc-news" as NewsSource, name: "BBC News", color: "bg-bbc" },
   { id: "the-wall-street-journal" as NewsSource, name: "Wall Street Journal", color: "bg-wsj" },
   { id: "cnn" as NewsSource, name: "CNN", color: "bg-cnn" },
-  { id: "the-new-york-times" as NewsSource, name: "New York Times", color: "bg-nyt" },
 ];
 
 const SourceFilter = ({ currentSource, onSourceChange }: SourceFilterProps) => {

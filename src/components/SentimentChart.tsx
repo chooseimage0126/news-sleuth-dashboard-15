@@ -1,68 +1,85 @@
 import { NewsItem } from "../types/news";
 import { ChartContainer } from "./ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import Sentiment from 'sentiment';
 
 interface SentimentChartProps {
   news: NewsItem[];
 }
 
 const SentimentChart = ({ news }: SentimentChartProps) => {
-  // Simple sentiment analysis based on positive/negative keywords
-  const positiveWords = ['success', 'growth', 'positive', 'gain', 'rise', 'up', 'boost', 'improve'];
-  const negativeWords = ['decline', 'fall', 'negative', 'loss', 'down', 'crisis', 'fail', 'risk'];
+  const sentiment = new Sentiment();
 
   const analyzeSentiment = (text: string): number => {
-    const words = text.toLowerCase().split(' ');
-    let score = 0;
-    words.forEach(word => {
-      if (positiveWords.includes(word)) score++;
-      if (negativeWords.includes(word)) score--;
-    });
-    return score;
+    const result = sentiment.analyze(text);
+    return result.score;
   };
 
-  const sentimentData = news.reduce((acc, item) => {
-    const sourceName = item.source.name;
-    const sentiment = analyzeSentiment(item.title + ' ' + (item.description || ''));
-    
-    const existingSource = acc.find(d => d.source === sourceName);
-    if (existingSource) {
-      existingSource.sentiment = (existingSource.sentiment + sentiment) / 2;
-    } else {
-      acc.push({ source: sourceName, sentiment });
-    }
-    return acc;
-  }, [] as Array<{ source: string; sentiment: number }>);
+  const sentimentData = news.map((item) => ({
+    title: item.title.substring(0, 30) + "...",
+    source: item.source.name,
+    sentiment: analyzeSentiment(item.title + ' ' + (item.description || '')),
+    publishedAt: new Date(item.publishedAt).toLocaleDateString()
+  }));
 
-  const config = {
-    positive: {
-      theme: {
-        light: "#22c55e",
-        dark: "#22c55e"
-      }
-    },
-    negative: {
-      theme: {
-        light: "#ef4444",
-        dark: "#ef4444"
-      }
-    }
+  const sourceColors: { [key: string]: string } = {
+    "Reuters": "#FF8C00",
+    "BBC News": "#BB1919",
+    "Wall Street Journal": "#0080C6",
+    "CNN": "#CC0000"
   };
 
   return (
-    <div className="w-full h-64 mb-8 bg-white p-4 rounded-lg shadow-md">
+    <div className="w-full h-96 mb-8 bg-white p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-semibold mb-4">News Sentiment Analysis</h2>
-      <ChartContainer className="h-48" config={config}>
-        <BarChart data={sentimentData}>
+      <ChartContainer className="h-80">
+        <LineChart data={sentimentData}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="source" />
-          <YAxis />
-          <Tooltip />
-          <Bar
-            dataKey="sentiment"
-            fill={(entry) => (entry > 0 ? "#22c55e" : "#ef4444")}
+          <XAxis 
+            dataKey="publishedAt" 
+            angle={-45}
+            textAnchor="end"
+            height={60}
           />
-        </BarChart>
+          <YAxis 
+            label={{ 
+              value: 'Sentiment Score', 
+              angle: -90, 
+              position: 'insideLeft',
+              style: { textAnchor: 'middle' }
+            }} 
+          />
+          <Tooltip 
+            content={({ active, payload }) => {
+              if (active && payload && payload.length) {
+                const data = payload[0].payload;
+                return (
+                  <div className="bg-white p-2 border border-gray-200 rounded shadow">
+                    <p className="font-semibold">{data.title}</p>
+                    <p className="text-sm text-gray-600">{data.source}</p>
+                    <p className="text-sm">
+                      Sentiment: {data.sentiment.toFixed(2)}
+                    </p>
+                  </div>
+                );
+              }
+              return null;
+            }}
+          />
+          <Legend />
+          {Object.entries(sourceColors).map(([source, color]) => (
+            <Line
+              key={source}
+              type="monotone"
+              dataKey="sentiment"
+              data={sentimentData.filter(item => item.source === source)}
+              name={source}
+              stroke={color}
+              dot={{ fill: color }}
+              activeDot={{ r: 8 }}
+            />
+          ))}
+        </LineChart>
       </ChartContainer>
     </div>
   );

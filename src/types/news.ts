@@ -10,4 +10,4 @@ export interface NewsItem {
   };
 }
 
-export type NewsSource = "reuters" | "bbc-news" | "the-wall-street-journal" | "cnn" | "the-new-york-times";
+export type NewsSource = "reuters" | "bbc-news" | "the-wall-street-journal" | "cnn";
