@@ -42,6 +42,7 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
   const sentimentData: SentimentData[] = news.map((item) => {
     const score = analyzeSentiment(item.title + ' ' + (item.description || ''));
     const sentimentInfo = getSentimentInfo(score);
+    const date = new Date(item.publishedAt);
     return {
       title: item.title.substring(0, 30) + "...",
       source: item.source.name,
@@ -49,7 +50,12 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
       sentimentLabel: sentimentInfo.label,
       sentimentColor: sentimentInfo.color,
       sentimentPattern: sentimentInfo.pattern,
-      publishedAt: new Date(item.publishedAt).toLocaleDateString()
+      publishedAt: date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })
     };
   });
 
@@ -77,7 +83,7 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
       <ChartContainer className="h-[450px]" config={chartConfig}>
         <LineChart 
           data={sentimentData}
-          margin={{ top: 20, right: 120, bottom: 60, left: 40 }}
+          margin={{ top: 20, right: 120, bottom: 80, left: 40 }}
         >
           <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
           {sentimentRanges.map((range) => (
@@ -104,8 +110,9 @@ const SentimentChart = ({ news, isColorBlindMode = false }: SentimentChartProps)
             dataKey="publishedAt" 
             angle={-45}
             textAnchor="end"
-            height={60}
+            height={80}
             tick={{ fill: theme === 'dark' ? '#fff' : '#000' }}
+            interval={0}
           />
           <YAxis 
             domain={[-10, 10]}

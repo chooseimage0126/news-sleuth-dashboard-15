@@ -4,7 +4,14 @@ const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const BASE_URL = "https://newsapi.org/v2";
 
 const getRandomPastTime = (index: number) => {
-  return new Date(Date.now() - (index * 1800000 + Math.random() * 1800000)).toISOString();
+  // Spread articles over the last 7 days, with some random variation
+  const daysAgo = Math.floor(index / 3); // Spread every 3 articles across a day
+  const hoursVariation = Math.random() * 24; // Random hour within the day
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  date.setHours(Math.floor(hoursVariation));
+  date.setMinutes(Math.floor(Math.random() * 60));
+  return date.toISOString();
 };
 
 const generateStoriesForSource = (sourceId: string, sourceName: string): NewsItem[] => {
@@ -16,7 +23,6 @@ const generateStoriesForSource = (sourceId: string, sourceName: string): NewsIte
     ["Politics", "Policy", "Government", "Diplomacy", "International"]
   ];
 
-  // Generate sentiment patterns that are more varied
   const sentimentPatterns = [
     { mood: "very positive", words: ["Breakthrough", "Revolutionary", "Historic Success", "Major Achievement"] },
     { mood: "positive", words: ["Progress", "Growth", "Improvement", "Advancement"] },
