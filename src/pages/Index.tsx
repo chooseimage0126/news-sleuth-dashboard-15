@@ -4,6 +4,7 @@ import { fetchNews } from "../services/newsApi";
 import { NewsSource } from "../types/news";
 import NewsGrid from "../components/NewsGrid";
 import SourceFilter from "../components/SourceFilter";
+import SentimentChart from "../components/SentimentChart";
 import { useToast } from "../components/ui/use-toast";
 
 const Index = () => {
@@ -28,6 +29,7 @@ const Index = () => {
     <div className="min-h-screen bg-gray-50">
       <div className="container py-8">
         <h1 className="mb-8 text-4xl font-bold text-gray-900">Latest News</h1>
+        <SentimentChart news={news} />
         <SourceFilter
           currentSource={selectedSource}
           onSourceChange={setSelectedSource}
