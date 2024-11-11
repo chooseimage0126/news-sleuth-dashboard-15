@@ -4,17 +4,17 @@ import { fetchNews } from "../services/newsApi";
 import { NewsSource } from "../types/news";
 import NewsGrid from "../components/NewsGrid";
 import SourceFilter from "../components/SourceFilter";
-import SentimentChart from "../components/SentimentChart";
-import { useToast } from "../components/ui/use-toast";
+import SentimentChart from "../components/sentiment/SentimentChart";
+import { useToast } from "../hooks/use-toast";
 import { useTheme } from "next-themes";
 import { Button } from "../components/ui/button";
 import { Sun, Moon, Eye } from "lucide-react";
 
 const Index = () => {
   const [selectedSource, setSelectedSource] = useState<NewsSource | undefined>(undefined);
+  const [isColorBlindMode, setIsColorBlindMode] = useState(false);
   const { toast } = useToast();
   const { theme, setTheme } = useTheme();
-  const [isColorBlindMode, setIsColorBlindMode] = useState(false);
 
   const { data: news = [], isLoading, error } = useQuery({
     queryKey: ["news", selectedSource],
@@ -59,7 +59,7 @@ const Index = () => {
           </div>
         </div>
         <div className="space-y-8">
-          <SentimentChart news={news} />
+          <SentimentChart news={news} isColorBlindMode={isColorBlindMode} />
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
               News Articles
