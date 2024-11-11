@@ -1,29 +1,27 @@
 import { NewsItem } from "../types/news";
 import { ChartContainer } from "./ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from "recharts";
 import Sentiment from 'sentiment';
+import { useTheme } from "next-themes";
 
 interface SentimentChartProps {
   news: NewsItem[];
 }
 
 const SentimentChart = ({ news }: SentimentChartProps) => {
+  const { theme } = useTheme();
   const sentiment = new Sentiment();
 
-  const getSentimentLabel = (score: number): string => {
-    if (score <= -5) return "Very Negative";
-    if (score < -2) return "Negative";
-    if (score < 2) return "Neutral";
-    if (score < 5) return "Positive";
-    return "Very Positive";
-  };
+  const sentimentRanges = [
+    { min: -Infinity, max: -5, label: "Very Negative", color: "#EF4444", pattern: "diagonal" },
+    { min: -5, max: -2, label: "Negative", color: "#F97316", pattern: "dots" },
+    { min: -2, max: 2, label: "Neutral", color: "#A3A3A3", pattern: "solid" },
+    { min: 2, max: 5, label: "Positive", color: "#22C55E", pattern: "dashed" },
+    { min: 5, max: Infinity, label: "Very Positive", color: "#15803D", pattern: "zigzag" }
+  ];
 
-  const getSentimentColor = (score: number): string => {
-    if (score <= -5) return "#EF4444"; // Red
-    if (score < -2) return "#F97316"; // Orange
-    if (score < 2) return "#A3A3A3"; // Gray
-    if (score < 5) return "#22C55E"; // Green
-    return "#15803D"; // Dark Green
+  const getSentimentInfo = (score: number) => {
+    return sentimentRanges.find(range => score > range.min && score <= range.max) || sentimentRanges[2];
   };
 
   const analyzeSentiment = (text: string): number => {
@@ -33,12 +31,14 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
 
   const sentimentData = news.map((item) => {
     const score = analyzeSentiment(item.title + ' ' + (item.description || ''));
+    const sentimentInfo = getSentimentInfo(score);
     return {
       title: item.title.substring(0, 30) + "...",
       source: item.source.name,
       sentiment: score,
-      sentimentLabel: getSentimentLabel(score),
-      sentimentColor: getSentimentColor(score),
+      sentimentLabel: sentimentInfo.label,
+      sentimentColor: sentimentInfo.color,
+      sentimentPattern: sentimentInfo.pattern,
       publishedAt: new Date(item.publishedAt).toLocaleDateString()
     };
   });
@@ -65,31 +65,65 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
     },
   };
 
+  // Create reference areas for sentiment ranges
+  const referenceAreas = sentimentRanges.map((range, index) => (
+    <ReferenceLine
+      key={range.label}
+      y={range.max}
+      stroke={range.color}
+      strokeDasharray={
+        range.pattern === "diagonal" ? "3 3" :
+        range.pattern === "dots" ? "1 3" :
+        range.pattern === "dashed" ? "5 5" :
+        range.pattern === "zigzag" ? "10 5" : undefined
+      }
+      strokeOpacity={0.3}
+      label={{
+        value: range.label,
+        position: 'right',
+        fill: theme === 'dark' ? '#fff' : '#000',
+        fontSize: 12
+      }}
+    />
+  ));
+
   return (
-    <div className="w-full h-[600px] mb-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+    <div className="w-full h-[600px] mb-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg transition-colors duration-200">
       <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">News Sentiment Analysis</h2>
-      <div className="flex items-center gap-4 mb-6">
+      
+      {/* Sentiment Scale Legend */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
         <div className="text-sm text-gray-600 dark:text-gray-300">
           Sentiment Scale:
         </div>
-        <div className="flex gap-2">
-          {[
-            { label: "Very Negative", color: "#EF4444" },
-            { label: "Negative", color: "#F97316" },
-            { label: "Neutral", color: "#A3A3A3" },
-            { label: "Positive", color: "#22C55E" },
-            { label: "Very Positive", color: "#15803D" }
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-              <span className="text-xs">{item.label}</span>
+        <div className="grid grid-cols-2 sm:flex sm:flex-row gap-2">
+          {sentimentRanges.map((range) => (
+            <div key={range.label} className="flex items-center gap-1">
+              <div 
+                className="w-3 h-3 rounded-full" 
+                style={{ 
+                  backgroundColor: range.color,
+                  backgroundImage: range.pattern === "diagonal" ? "linear-gradient(45deg, rgba(255,255,255,0.2) 25%, transparent 25%)" : undefined
+                }} 
+              />
+              <span className="text-xs whitespace-nowrap">
+                {range.label}
+                <span className="text-gray-500 dark:text-gray-400 ml-1">
+                  ({range.min === -Infinity ? '≤' : '>'}{range.min})
+                </span>
+              </span>
             </div>
           ))}
         </div>
       </div>
+
       <ChartContainer className="h-[450px]" config={chartConfig}>
-        <LineChart data={sentimentData}>
+        <LineChart 
+          data={sentimentData}
+          margin={{ top: 20, right: 120, bottom: 60, left: 40 }}
+        >
           <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
+          {referenceAreas}
           <XAxis 
             dataKey="publishedAt" 
             angle={-45}
@@ -98,14 +132,8 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
             tick={{ fill: 'currentColor' }}
           />
           <YAxis 
-            label={{ 
-              value: 'Sentiment', 
-              angle: -90, 
-              position: 'insideLeft',
-              style: { textAnchor: 'middle' }
-            }}
-            ticks={[-5, -2, 0, 2, 5]}
-            tickFormatter={(value) => getSentimentLabel(value)}
+            domain={[-10, 10]}
+            ticks={[-10, -5, -2, 0, 2, 5, 10]}
             tick={{ fill: 'currentColor' }}
           />
           <Tooltip 
@@ -124,7 +152,7 @@ const SentimentChart = ({ news }: SentimentChartProps) => {
                       <p className="text-sm">
                         <span className="font-medium">{data.sentimentLabel}</span>
                         <span className="text-gray-500 dark:text-gray-400 ml-1">
-                          (Score: {data.sentiment})
+                          (Score: {data.sentiment.toFixed(2)})
                         </span>
                       </p>
                     </div>

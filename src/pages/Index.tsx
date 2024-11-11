@@ -6,10 +6,15 @@ import NewsGrid from "../components/NewsGrid";
 import SourceFilter from "../components/SourceFilter";
 import SentimentChart from "../components/SentimentChart";
 import { useToast } from "../components/ui/use-toast";
+import { useTheme } from "next-themes";
+import { Button } from "../components/ui/button";
+import { Sun, Moon, Eye } from "lucide-react";
 
 const Index = () => {
   const [selectedSource, setSelectedSource] = useState<NewsSource | undefined>(undefined);
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
+  const [isColorBlindMode, setIsColorBlindMode] = useState(false);
 
   const { data: news = [], isLoading, error } = useQuery({
     queryKey: ["news", selectedSource],
@@ -28,11 +33,31 @@ const Index = () => {
   }, [error, toast]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       <div className="container py-8 px-4 sm:px-6 lg:px-8">
-        <h1 className="mb-8 text-4xl font-bold text-gray-900 dark:text-white">
-          News Sentiment Analysis Dashboard
-        </h1>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+            News Sentiment Analysis Dashboard
+          </h1>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className="h-10 w-10"
+            >
+              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsColorBlindMode(!isColorBlindMode)}
+              className={`h-10 w-10 ${isColorBlindMode ? 'bg-primary/10' : ''}`}
+            >
+              <Eye className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
         <div className="space-y-8">
           <SentimentChart news={news} />
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
