@@ -5,6 +5,7 @@ import { NewsSource } from "../types/news";
 import NewsGrid from "../components/NewsGrid";
 import SourceFilter from "../components/SourceFilter";
 import SentimentChart from "../components/sentiment/SentimentChart";
+import NewsMap from "../components/map/NewsMap";
 import { useToast } from "../hooks/use-toast";
 import { useTheme } from "next-themes";
 import { Button } from "../components/ui/button";
@@ -69,6 +70,7 @@ const Index = () => {
           </div>
         </div>
         <div className="space-y-8">
+          <NewsMap news={news} />
           <SentimentChart news={news} isColorBlindMode={isColorBlindMode} />
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">
